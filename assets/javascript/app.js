@@ -1,14 +1,14 @@
 //single source of truth
-var t;
-var triviaQuizNumber = 3;
+var triviaQuizs;
+var triviaTotalQuizs = 3;
 
 var correctNumber;
 var incorrectNumber;
 var unsnswered;
-var questionNumber;
+var quizNumber;
 
-var questionTimer = 10;
-var displayQtimer;
+var timer = 10;
+var displayTimer;
 
 var firstTimeStart = true;
 var TriviaRequestReturned = false;
@@ -22,31 +22,31 @@ $(document).ready(function () {
     $(document).on("click", "#start", function () {
         if (TriviaRequestReturned) {
             start();
-            questionAndTimerDisplay();
+            QuizAndTimerDisplay();
         } else {
             $("#start").html("Please click me again!");
         }
 
     }).on("click", ".correctAnswer", function () {
 
-        correctAnswerDisplay(questionNumber);
+        correctAnswerDisplay(quizNumber);
         correctNumber++;
-        questionNumber++;
-        setTimeout(questionAndTimerDisplay, 3000);
-        cancelQuestionTimer();
+        quizNumber++;
+        setTimeout(QuizAndTimerDisplay, 2000);
+        cancelTimer();
 
     }).on("click", ".incorrectAnswer", function () {
 
-        incorrectAnswerDisplay(questionNumber);
+        incorrectAnswerDisplay(quizNumber);
         incorrectNumber++;
-        questionNumber++;
-        setTimeout(questionAndTimerDisplay, 3000);
-        cancelQuestionTimer();
+        quizNumber++;
+        setTimeout(QuizAndTimerDisplay, 2000);
+        cancelTimer();
 
     }).on("click", "#restart", function () {
         firstTimeStart = false;
         start();
-        questionAndTimerDisplay();
+        QuizAndTimerDisplay();
 
     });
 
@@ -59,15 +59,15 @@ $(document).ready(function () {
         correctNumber = 0;
         incorrectNumber = 0;
         unsnswered = 0;
-        questionNumber = 0;
+        quizNumber = 0;
     }
 
-    function questionAndTimerDisplay() {
+    function QuizAndTimerDisplay() {
 
-        if (questionNumber < triviaQuizNumber) {
+        if (quizNumber < triviaTotalQuizs) {
 
-            displayQtimer = setInterval(QtimerDisplay, 1000);
-            questionDisplay(questionNumber);
+            displayTimer = setInterval(timerDisplay, 1000);
+            quizDisplay(quizNumber);
 
         } else {
 
@@ -83,56 +83,56 @@ $(document).ready(function () {
             method: "GET"
         }).then(function (response) {
             console.log(response);
-            t = response.results;
+            triviaQuizs = response.results;
             TriviaRequestReturned = true;
         });
     }
 
-    function QtimerDisplay() {
+    function timerDisplay() {
 
-        console.log(displayQtimer, questionTimer);
+        console.log(displayTimer, timer);
 
-        if (questionTimer > 0) {
+        if (timer > 0) {
             $("#timer").show();
-            $("#timer").html("<p>Time Remaining: " + questionTimer + " s </p>");
-            questionTimer--;
+            $("#timer").html("<p>Time Remaining: " + timer + " s </p>");
+            timer--;
         } else {
-            timeoutDiplay(questionNumber);
+            timeoutDiplay(quizNumber);
             unsnswered++;
-            questionNumber++;
-            setTimeout(questionAndTimerDisplay, 3000);
-            cancelQuestionTimer();
+            quizNumber++;
+            setTimeout(QuizAndTimerDisplay, 2000);
+            cancelTimer();
         }
 
     }
 
-    function cancelQuestionTimer() {
+    function cancelTimer() {
 
         $("#timer").hide();
-        clearInterval(displayQtimer);
-        questionTimer = 10;
+        clearInterval(displayTimer);
+        timer = 10;
 
     }
 
-    function questionDisplay(n) {
+    function quizDisplay(n) {
         $("#mainContainer").empty();
-        $("#mainContainer").html("<h3>" + t[n].question + "</h3>");
+        $("#mainContainer").html("<h3>" + triviaQuizs[n].question + "</h3>");
         $("h3").append($("<ul></ul>"));
 
         if (firstTimeStart) {
-            t[n].incorrect_answers.splice(Math.floor(Math.random() * (t[n].incorrect_answers.length + 1)), 0, t[n].correct_answer);
+            triviaQuizs[n].incorrect_answers.splice(Math.floor(Math.random() * (triviaQuizs[n].incorrect_answers.length + 1)), 0, triviaQuizs[n].correct_answer);
         }
 
-        for (let i = 0; i < t[n].incorrect_answers.length; i++) {
-            if (t[n].incorrect_answers[i] === t[n].correct_answer) {
+        for (let i = 0; i < triviaQuizs[n].incorrect_answers.length; i++) {
+            if (triviaQuizs[n].incorrect_answers[i] === triviaQuizs[n].correct_answer) {
                 let answerList = $("<li>");
-                answerList.text(t[n].incorrect_answers[i]);
+                answerList.text(triviaQuizs[n].incorrect_answers[i]);
                 answerList.attr("class", "correctAnswer");
                 $("ul").append(answerList);
 
             } else {
                 let answerList = $("<li>");
-                answerList.text(t[n].incorrect_answers[i]);
+                answerList.text(triviaQuizs[n].incorrect_answers[i]);
                 answerList.attr("class", "incorrectAnswer");
                 $("ul").append(answerList);
             }
@@ -145,7 +145,7 @@ $(document).ready(function () {
     function timeoutDiplay(n) {
         $("#mainContainer").empty();
         $("#mainContainer").html("<h3>Out of Time!</h3>")
-        $("h3").append("<p>The Correct answer is: " + t[n].correct_answer + "</p>");
+        $("h3").append("<p>The Correct answer is: " + triviaQuizs[n].correct_answer + "</p>");
     }
 
     function correctAnswerDisplay() {
@@ -157,7 +157,7 @@ $(document).ready(function () {
     function incorrectAnswerDisplay(n) {
         $("#mainContainer").empty();
         $("#mainContainer").html("<h3>Nope!</h3>")
-        $("h3").append("<p>The Correct answer is: " + t[n].correct_answer + "</p>");
+        $("h3").append("<p>The Correct answer is: " + triviaQuizs[n].correct_answer + "</p>");
 
     }
 
