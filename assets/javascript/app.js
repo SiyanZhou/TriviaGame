@@ -124,18 +124,18 @@ $(document).ready(function () {
         }
 
         for (let i = 0; i < triviaQuizs[n].incorrect_answers.length; i++) {
-            if (triviaQuizs[n].incorrect_answers[i] === triviaQuizs[n].correct_answer) {
-                let answerList = $("<li>");
-                answerList.text(triviaQuizs[n].incorrect_answers[i]);
-                answerList.attr("class", "correctAnswer");
-                $("ul").append(answerList);
+           
+            let answerButton = $("<button></button><br><br>");
+            answerButton.text(triviaQuizs[n].incorrect_answers[i]);
+            $("ul").append(answerButton);
+            
 
+            if (triviaQuizs[n].incorrect_answers[i] === triviaQuizs[n].correct_answer) {
+                answerButton.attr("class", "correctAnswer");
             } else {
-                let answerList = $("<li>");
-                answerList.text(triviaQuizs[n].incorrect_answers[i]);
-                answerList.attr("class", "incorrectAnswer");
-                $("ul").append(answerList);
+                answerButton.attr("class", "incorrectAnswer");
             }
+
         }
 
     }
